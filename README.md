@@ -14,6 +14,7 @@ By analyzing the 48-byte payload, which is periodically sent to the controller f
 * **DualSenseX** (Parameter modification at the firmware level)
 <img width="1919" height="1079" alt="Screenshot 2026-08-11 140017" src="https://github.com/user-attachments/assets/a7f52640-b974-4400-87b1-a917c697d5e9" />
 <br>
+<br>
 
 ## Payload Structure Overview
 The payload looks something like this:
