@@ -39,7 +39,7 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 > Note: 0x02 is a report ID and can be ignored in our case.
 
 
-## Bytes 1-2 [*`fc d7`* 00 00 9d 66 40 6c]
+## Bytes 1-2 [*`fc`* *`d7`* 00 00 9d 66 40 6c]
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
 `0x0F` -> `0xFC` (Enables Haptics) <br>
 `0x55` -> `0xD7` (Enables rest of the audio stack)
@@ -63,9 +63,8 @@ There are 3 output modes and changing this value selects the corresponding mode:
 If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset.
 
 <br>
-<br>
 
-**Byte 5** follows a linear curve across its full range `(hex ≈ 1.28 × volume% + 28)`. At 0%, the lowest value is 0x1E rather than 0x00, which floor keeps the headphone amp engaged, avoiding a hard cutoff, but may produce audible hiss on particularly sensitive IEMs.
+**Byte 5 (Headphone jack)** follows a linear curve across its full range `(hex ≈ 1.28 × volume% + 28)`. At 0%, the lowest value is 0x1E rather than 0x00, which floor keeps the headphone amp engaged, avoiding a hard cutoff, but may produce audible hiss on particularly sensitive IEMs.
 
 0% (Floor): ```0x1E```<br>
 10%: ```0x29```<br>
@@ -75,7 +74,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 <br>
 
-**Byte 6** also scales linearly `(hex ≈ 0.41 × volume% + 61)`, but unlike the 3.5mm jack, 0% is a hard mute (0x00).
+**Byte 6 Internal speaker)** also scales linearly `(hex ≈ 0.41 × volume% + 61)`, but unlike the 3.5mm jack, 0% is a hard mute (0x00).
 
 
 0% (Muted): ```0x00```<br>
@@ -85,20 +84,20 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 100%: ```0x66```
 
 <br>
-<br>
 
 **Byte 7** is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
 
-Formula: `Volume (0-64) = Hex Value`
-`64` directly corresponds to `0x40`, `38` to `0x26`, etc.
+Formula: `Volume (0-64) = Hex Value`<br>
+For example: `64` directly corresponds to `0x40`, `38` to `0x26`, etc.
 
 
 <br>
 <br>
 
-## Payload Construction Reference
+## Payload Construction
 
 To recap, this is the byte structure controlling the states of different audio endpoints of a DualSense controller: <br>
+
 Byte 0: 0x02 (Report ID) <br>
 Byte 1: 0xFC (Initialized Flag for Haptics) <br>
 Byte 2: 0xD7 (Initialized Flag for Headphones & Speaker) <br>
