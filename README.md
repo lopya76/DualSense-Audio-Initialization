@@ -64,7 +64,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 <br>
 
-**Byte 5** corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
+**Byte 5** follows a linear curve across its full range `(hex ≈ 1.28 × volume% + 28)`. At 0%, this naturally lands on 0x1E rather than 0x00, which floor keeps the headphone amp engaged, avoiding a hard cutoff, but may produce audible hiss on particularly sensitive IEMs.
 
 0% (Floor): ```0x1E```
 10%: ```0x29```
@@ -75,7 +75,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 <br>
 
-**Byte 6** controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
+**Byte 6** also scales linearly `(hex ≈ 0.41 × volume% + 61)`, but unlike the 3.5mm jack, 0% is a hard mute (0x00).
 
 
 0% (Muted): ```0x00```
