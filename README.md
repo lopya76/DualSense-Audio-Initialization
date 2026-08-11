@@ -60,6 +60,8 @@ There are 3 output modes and changing this value selects the corresponding mode:
 
 ## Bytes 5, 6 and 7
 If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset.
+
+<br>
 <br>
 
 **Byte 5** corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
