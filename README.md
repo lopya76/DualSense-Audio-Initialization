@@ -1,17 +1,18 @@
 # DualSense-Audio-Initialization
 A technical breakdown and specification for correctly initializing the broken DualSense audio implementation on Windows, which has remained unfixed for 6 years.
 
+
 ## Overview
 
 When connected to a Windows PC via USB, the DualSense controller fails to initialize its internal audio endpoints (built-in speaker and the 3.5mm headset jack. This is a known issue where the controller defaults to an uninitialized audio state. Rel Reddit post: https://www.reddit.com/r/Dualsense/comments/1axqxj8/dualsense_controller_the_speaker_and_pc_support/
 
 By analyzing the 48-byte payload periodically sent to the controller from a host PC, this document details the exact bit manipulation required to force-initialize the audio hardware, route signals to specific outputs, and control hardware-level volumes.
+<img width="990" height="366" alt="Screenshot 2026-08-11 132949" src="https://github.com/user-attachments/assets/c38bb882-6454-44cb-bdf3-6271502c87b2" />
 
 ## Tools Used
 * **Wireshark** & **USBPcap** (USB packet capture and analysis)
 * **DualSenseX** (Parameter modification at the firmware level)
 
-<br>
 <br>
 
 ## Payload Structure Overview
@@ -35,9 +36,11 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 
 Let's break down what each byte does. (0x02 is a report ID and can be ignored in our case.)
 
+
 Bytes 1-2:
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
 ```0x0F``` ```0x55``` -> ```0xFF``` ```0xD7```
+
 
 Byte 8:
 This byte acts as a hardware multiplexer, determining which physical outputs receive the audio signal. If an output is disabled via this value, its corresponding volume byte in the payload is forced to ```0x00```
@@ -48,5 +51,54 @@ There are 3 output modes and changing this value selects the corresponding mode:
 | Speaker Only| 0x7C | Headset volume byte (Byte 5) must be 0x00. |
 | Headset Only | 0x4C | Speaker volume byte (Byte 6) must be 0x00. |
 | Combined | 0x6C | Both volume bytes are active simultaneously. |
+
+
+Bytes 5, 6 and 7
+If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset
+
+Byte 5 corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
+
+0% (Floor): ```0x1E```
+10%: ```0x29```
+50%: ```0x5D```
+80%: ```0x82```
+100%: ```0x9D```
+
+
+Byte 6 controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
+
+0% (Muted): ```0x00```
+10%: ```0x41```
+50%: ```0x51```
+80%: ```0x5D```
+100%: ```0x66```
+
+Byte 7 is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
+Formula: ```Volume (0-64) = Hex Value```
+```64``` directly corresponds to ```0x40```, ```38``` to ```0x26```, etc.
+
+<br>
+## Payload Construction Reference
+
+To reliably change states, construct your 48-byte buffer using this framework.
+    Byte 0: 0x02 (Report ID)
+    Byte 1: 0xFF (Initialized Flag)
+    Byte 2: 0xD7 (Initialized Flag)
+    Byte 3-4: 0x00 0x00
+    Byte 5: [Headset Volume Hex] (Must be 0x00 if Headset is off)
+    Byte 6: [Speaker Volume Hex] (Must be 0x00 if Speaker is off)
+    Byte 7: [Mic Volume Hex]
+    Byte 8: [Output Mode Hex]
+
+    
+<br>
+<br>
+The rest of the bytes are currently undocumented by me, but I think they're for LEDs and adaptive trigger states.
+All of the research was done by me, by hand as practice for reading and deciphering bytes (which i recently learned how to do :D)
+<img width="1919" height="1079" alt="Screenshot 2026-08-11 140017" src="https://github.com/user-attachments/assets/a7f52640-b974-4400-87b1-a917c697d5e9" />
+
+I hope my research will be useful to someone, someday.
+
+
 
 
