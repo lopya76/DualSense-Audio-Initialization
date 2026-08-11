@@ -11,7 +11,7 @@ By analyzing the 48-byte payload, which is periodically sent to the controller f
 
 ## Tools Used
 * **Wireshark** & **USBPcap** (USB packet capture and analysis)
-* **DualSenseX** (Parameter modification at the firmware level)
+* **DualSenseX** (Sending firmware level commands)
 <img width="1919" height="1079" alt="Screenshot 2026-08-11 140017" src="https://github.com/user-attachments/assets/a7f52640-b974-4400-87b1-a917c697d5e9" />
 <br>
 <br>
@@ -41,7 +41,7 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 
 ## Bytes 1-2 [*`fc d7`* 00 00 9d 66 40 6c]
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
-`0x0F` -> `0xFC` (Enables Haptics)
+`0x0F` -> `0xFC` (Enables Haptics) <br>
 `0x55` -> `0xD7` (Enables rest of the audio stack)
 
 <br>
@@ -65,24 +65,23 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 <br>
 
-**Byte 5** follows a linear curve across its full range `(hex ≈ 1.28 × volume% + 28)`. At 0%, this naturally lands on 0x1E rather than 0x00, which floor keeps the headphone amp engaged, avoiding a hard cutoff, but may produce audible hiss on particularly sensitive IEMs.
+**Byte 5** follows a linear curve across its full range `(hex ≈ 1.28 × volume% + 28)`. At 0%, the lowest value is 0x1E rather than 0x00, which floor keeps the headphone amp engaged, avoiding a hard cutoff, but may produce audible hiss on particularly sensitive IEMs.
 
-0% (Floor): ```0x1E```
-10%: ```0x29```
-50%: ```0x5D```
-80%: ```0x82```
+0% (Floor): ```0x1E```<br>
+10%: ```0x29```<br>
+50%: ```0x5D```<br>
+80%: ```0x82```<br>
 100%: ```0x9D```
-
 <br>
 <br>
 
 **Byte 6** also scales linearly `(hex ≈ 0.41 × volume% + 61)`, but unlike the 3.5mm jack, 0% is a hard mute (0x00).
 
 
-0% (Muted): ```0x00```
-10%: ```0x41```
-50%: ```0x51```
-80%: ```0x5D```
+0% (Muted): ```0x00```<br>
+10%: ```0x41```<br>
+50%: ```0x51```<br>
+80%: ```0x5D```<br>
 100%: ```0x66```
 
 <br>
