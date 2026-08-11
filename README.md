@@ -35,15 +35,17 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 <br>
 <br>
 
-Let's break down what each byte does. (0x02 is a report ID and can be ignored in our case.)
+## Byte breakdown
+> Note: 0x02 is a report ID and can be ignored in our case.
 
 
-Bytes 1-2:
+## Bytes 1-2:
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
-```0x0F``` ```0x55``` -> ```0xFF``` ```0xD7```
+`0x0F` `0x55` -> `0xFF` `0xD7`
 
+<br>
 
-Byte 8:
+## Byte 8:
 This byte acts as a hardware multiplexer, determining which physical outputs receive the audio signal. If an output is disabled via this value, its corresponding volume byte in the payload is forced to ```0x00```
 
 There are 3 output modes and changing this value selects the corresponding mode:
@@ -53,11 +55,12 @@ There are 3 output modes and changing this value selects the corresponding mode:
 | Headset Only | 0x4C | Speaker volume byte (Byte 6) must be 0x00. |
 | Combined | 0x6C | Both volume bytes are active simultaneously. |
 
+<br>
 
-Bytes 5, 6 and 7
+## Bytes 5, 6 and 7
 If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset
 
-Byte 5 corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
+**Byte 5** corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
 
 0% (Floor): ```0x1E```
 10%: ```0x29```
@@ -65,8 +68,8 @@ Byte 5 corresponds to the headset volume. The 3.5mm jack uses a scaled curve. No
 80%: ```0x82```
 100%: ```0x9D```
 
-
-Byte 6 controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
+<br>
+**Byte 6** controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
 
 0% (Muted): ```0x00```
 10%: ```0x41```
@@ -74,10 +77,12 @@ Byte 6 controls the speaker volume. It appears to use an offset curve, likely sc
 80%: ```0x5D```
 100%: ```0x66```
 
-Byte 7 is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
+<br>
+**Byte 7** is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
 Formula: ```Volume (0-64) = Hex Value```
 ```64``` directly corresponds to ```0x40```, ```38``` to ```0x26```, etc.
 
+<br>
 <br>
 ## Payload Construction Reference
 
