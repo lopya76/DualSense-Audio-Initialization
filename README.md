@@ -11,9 +11,12 @@ By analyzing the 48-byte payload periodically sent to the controller from a host
 * **Wireshark** & **USBPcap** (USB packet capture and analysis)
 * **DualSenseX** (Parameter modification at the firmware level)
 
+<br>
+<br>
 
 ## Payload Structure Overview
-The payload looks something like this upon first connection:
+The payload looks something like this:
+
 First connection / speaker doesn't work
 ```
 0000   02 0f 55 00 00 00 00 00 00 01 00 00 00 00 00 00   ..U.............
@@ -27,10 +30,23 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
 0020   00 00 00 00 00 00 05 03 00 00 02 00 35 00 00 e6   ............5...
 ```
+<br>
+<br>
 
 Let's break down what each byte does. (0x02 is a report ID and can be ignored in our case.)
 
 Bytes 1-2:
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
 ```0x0F``` ```0x55``` -> ```0xFF``` ```0xD7```
+
+Byte 8:
+This byte acts as a hardware multiplexer, determining which physical outputs receive the audio signal. If an output is disabled via this value, its corresponding volume byte in the payload is forced to ```0x00```
+
+There are 3 output modes and changing this value selects the corresponding mode:
+| Output mode | Byte 8 Value | Effect |
+| --- | --- | --- |
+| Speaker Only| 0x7C | Headset volume byte (Byte 5) must be 0x00. |
+| Headset Only | 0x4C | Speaker volume byte (Byte 6) must be 0x00. |
+| Combined | 0x6C | Both volume bytes are active simultaneously. |
+
 
