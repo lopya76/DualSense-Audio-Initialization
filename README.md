@@ -6,7 +6,7 @@ A technical breakdown and specification for correctly initializing the broken Du
 
 When connected to a Windows PC via USB, the DualSense controller fails to initialize its internal audio endpoints (built-in speaker and the 3.5mm headset jack). This is a known issue where the controller defaults to an uninitialized audio state. Related Reddit post: https://www.reddit.com/r/Dualsense/comments/1axqxj8/dualsense_controller_the_speaker_and_pc_support/
 
-By analyzing the 48-byte payload periodically sent to the controller from a host PC, this document details the exact bit manipulation required to force-initialize the audio hardware, route signals to specific outputs, and control hardware-level volumes.
+By analyzing the 48-byte payload, which is periodically sent to the controller from a host PC, this document details the exact bit manipulation required to force-initialize the audio hardware, route signals to specific outputs, and control hardware-level volumes.
 <img width="990" height="366" alt="Screenshot 2026-08-11 132949" src="https://github.com/user-attachments/assets/c38bb882-6454-44cb-bdf3-6271502c87b2" />
 
 ## Tools Used
