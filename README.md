@@ -58,14 +58,13 @@ There are 3 output modes and changing this value selects the corresponding mode:
 
 <br>
 
-## Bytes 5, 6 and 7
+## Bytes 5, 6 and 7 [ff d7 00 00 `9d` `66` `40` 6c]
 If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset.
 
 <br>
 <br>
 
 **Byte 5** corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
-**[ff d7 00 00 *`9d`* 66 40 6c]**
 
 0% (Floor): ```0x1E```
 10%: ```0x29```
@@ -74,9 +73,10 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 100%: ```0x9D```
 
 <br>
+<br>
 
 **Byte 6** controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
-**[ff d7 00 00 9d *`66`* 40 6c]**
+
 
 0% (Muted): ```0x00```
 10%: ```0x41```
@@ -85,9 +85,9 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 100%: ```0x66```
 
 <br>
+<br>
 
 **Byte 7** is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
-**[ff d7 00 00 9d 66 *`40`* 6c]**
 
 Formula: `Volume (0-64) = Hex Value`
 `64` directly corresponds to `0x40`, `38` to `0x26`, etc.
@@ -95,24 +95,25 @@ Formula: `Volume (0-64) = Hex Value`
 
 <br>
 <br>
+
 ## Payload Construction Reference
 
-To reliably change states, construct your 48-byte buffer using this framework.
-    Byte 0: 0x02 (Report ID)
-    Byte 1: 0xFF (Initialized Flag)
-    Byte 2: 0xD7 (Initialized Flag)
-    Byte 3-4: 0x00 0x00
-    Byte 5: [Headset Volume Hex] (Must be 0x00 if Headset is off)
-    Byte 6: [Speaker Volume Hex] (Must be 0x00 if Speaker is off)
-    Byte 7: [Mic Volume Hex]
-    Byte 8: [Output Mode Hex]
-
-    
-<br>
+To recap, this is the byte structure controlling the states of different audio endpoints of a DualSense controller: <br>
+Byte 0: 0x02 (Report ID) <br>
+Byte 1: 0xFF (Initialized Flag) <br>
+Byte 2: 0xD7 (Initialized Flag) <br>
+Byte 3-4: 0x00 0x00 <br>
+Byte 5: [Headset Volume Hex] (Must be 0x00 if Headset is off) <br>
+Byte 6: [Speaker Volume Hex] (Must be 0x00 if Speaker is off) <br>
+Byte 7: [Mic Volume Hex] <br>
+Byte 8: [Output Mode Hex] <br>
 <br>
 The rest of the bytes are currently undocumented by me, but I think they're for LEDs and adaptive trigger states.
-All of the research was done by me, by hand, to practice reading and deciphering bytes (which i recently learned how to do :D)
+<br>
+<br>
 
+All of the research was done by me, by hand, to practice reading and deciphering bytes (which i recently learned how to do :D)
+<br>
 I hope my research will be useful to someone, someday.
 
 
