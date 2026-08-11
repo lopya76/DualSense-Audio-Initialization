@@ -65,7 +65,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 
 **Byte 5** corresponds to the headset volume. The 3.5mm jack uses a scaled curve. Notably, a 0% volume state on an active headset mode does not drop to 0x00; it drops to a hardware floor of 0x1E to keep the amp engaged without outputting audible sound. Hiss might be heard on particularly sensitive IEMs.
-[ff d7 00 00 *`9d`* 66 40 6c]
+**[ff d7 00 00 *`9d`* 66 40 6c]**
 
 0% (Floor): ```0x1E```
 10%: ```0x29```
@@ -76,7 +76,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 
 **Byte 6** controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
-[ff d7 00 00 9d *`66`* 40 6c]
+**[ff d7 00 00 9d *`66`* 40 6c]**
 
 0% (Muted): ```0x00```
 10%: ```0x41```
@@ -87,7 +87,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 <br>
 
 **Byte 7** is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
-[ff d7 00 00 9d 66 *`40`* 6c]
+**[ff d7 00 00 9d 66 *`40`* 6c]**
 
 Formula: `Volume (0-64) = Hex Value`
 `64` directly corresponds to `0x40`, `38` to `0x26`, etc.
