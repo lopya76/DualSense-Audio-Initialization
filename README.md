@@ -69,6 +69,7 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 100%: ```0x9D```
 
 <br>
+
 **Byte 6** controls the speaker volume. It appears to use an offset curve, likely scaled to the specific impedance of the internal driver.
 
 0% (Muted): ```0x00```
@@ -78,9 +79,10 @@ If the aforementioned values are set correctly, we unlock volume controls for th
 100%: ```0x66```
 
 <br>
+
 **Byte 7** is the microphone, which uses a 1:1 linear mapping to integer values, its max value being 64.
-Formula: ```Volume (0-64) = Hex Value```
-```64``` directly corresponds to ```0x40```, ```38``` to ```0x26```, etc.
+Formula: `Volume (0-64) = Hex Value`
+`64` directly corresponds to `0x40`, `38` to `0x26`, etc.
 
 <br>
 <br>
