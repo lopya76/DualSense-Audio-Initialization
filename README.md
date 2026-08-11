@@ -39,7 +39,7 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 > Note: 0x02 is a report ID and can be ignored in our case.
 
 
-## Bytes 1-2 [02 `*ff d7*` 00 00 00 66 40 7c 01]
+## Bytes 1-2 [*`ff d7`* 00 00 00 66 40 7c 01]
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
 `0x0F` `0x55` -> `0xFF` `0xD7`
 
