@@ -28,7 +28,7 @@ First connection / speaker doesn't work
 
 Correctly initialized, all volumes maxed out (how it SHOULD be)
 ```
-0000   02 ff d7 00 00 9d 66 40 6c 01 00 00 00 00 00 00   ......f@l.......
+0000   02 fc d7 00 00 9d 66 40 6c 01 00 00 00 00 00 00   ......f@l.......
 0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
 0020   00 00 00 00 00 00 05 03 00 00 02 00 35 00 00 e6   ............5...
 ```
@@ -39,13 +39,14 @@ Correctly initialized, all volumes maxed out (how it SHOULD be)
 > Note: 0x02 is a report ID and can be ignored in our case.
 
 
-## Bytes 1-2 [*`ff d7`* 00 00 9d 66 40 6c]
+## Bytes 1-2 [*`fc d7`* 00 00 9d 66 40 6c]
 Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
-`0x0F` `0x55` -> `0xFF` `0xD7`
+`0x0F` -> `0xFC` (Enables Haptics)
+`0x55` -> `0xD7` (Enables rest of the audio stack)
 
 <br>
 
-## Byte 8 [ff d7 00 00 9d 66 40 *`6c`*]
+## Byte 8 [fc d7 00 00 9d 66 40 *`6c`*]
 
 This byte acts as a hardware multiplexer, determining which physical outputs receive the audio signal. If an output is disabled via this value, its corresponding volume byte in the payload is forced to ```0x00```
 
@@ -58,7 +59,7 @@ There are 3 output modes and changing this value selects the corresponding mode:
 
 <br>
 
-## Bytes 5, 6 and 7 [ff d7 00 00 `9d` `66` `40` 6c]
+## Bytes 5, 6 and 7 [fc d7 00 00 `9d` `66` `40` 6c]
 If the aforementioned values are set correctly, we unlock volume controls for the microphone, speaker and headset.
 
 <br>
@@ -100,8 +101,8 @@ Formula: `Volume (0-64) = Hex Value`
 
 To recap, this is the byte structure controlling the states of different audio endpoints of a DualSense controller: <br>
 Byte 0: 0x02 (Report ID) <br>
-Byte 1: 0xFF (Initialized Flag) <br>
-Byte 2: 0xD7 (Initialized Flag) <br>
+Byte 1: 0xFC (Initialized Flag for Haptics) <br>
+Byte 2: 0xD7 (Initialized Flag for Headphones & Speaker) <br>
 Byte 3-4: 0x00 0x00 <br>
 Byte 5: [Headset Volume Hex] (Must be 0x00 if Headset is off) <br>
 Byte 6: [Speaker Volume Hex] (Must be 0x00 if Speaker is off) <br>
