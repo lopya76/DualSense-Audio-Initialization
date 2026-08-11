@@ -7,7 +7,7 @@ When connected to a Windows PC via USB, the DualSense controller fails to initia
 
 By analyzing the 48-byte payload periodically sent to the controller from a host PC, this document details the exact bit manipulation required to force-initialize the audio hardware, route signals to specific outputs, and control hardware-level volumes.
 
-## 🛠️ Tools Used
+## Tools Used
 * **Wireshark** & **USBPcap** (USB packet capture and analysis)
 * **DualSenseX** (Parameter modification at the firmware level)
 
@@ -20,3 +20,17 @@ First connection / speaker doesn't work
 0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
 0020   00 00 00 00 00 00 00 03 00 00 02 00 35 00 00 e6   ............5...
 ```
+
+Correctly initialized, all volumes maxed out (how it SHOULD be)
+```
+0000   02 ff d7 00 00 00 66 40 7c 01 00 00 00 00 00 00   ......f@|.......
+0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00   ................
+0020   00 00 00 00 00 00 05 03 00 00 02 00 35 00 00 e6   ............5...
+```
+
+Let's break down what each byte does. (0x02 is a report ID and can be ignored in our case.)
+
+Bytes 1-2:
+Before the controller will accept volume or routing commands, the audio must first be initialized by flipping the following bytes:
+```0x0F``` ```0x55``` -> ```0xFF``` ```0xD7```
+
