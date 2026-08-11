@@ -12,7 +12,7 @@ By analyzing the 48-byte payload, which is periodically sent to the controller f
 ## Tools Used
 * **Wireshark** & **USBPcap** (USB packet capture and analysis)
 * **DualSenseX** (Parameter modification at the firmware level)
-
+<img width="1919" height="1079" alt="Screenshot 2026-08-11 140017" src="https://github.com/user-attachments/assets/a7f52640-b974-4400-87b1-a917c697d5e9" />
 <br>
 
 ## Payload Structure Overview
@@ -94,8 +94,7 @@ To reliably change states, construct your 48-byte buffer using this framework.
 <br>
 <br>
 The rest of the bytes are currently undocumented by me, but I think they're for LEDs and adaptive trigger states.
-All of the research was done by me, by hand as practice for reading and deciphering bytes (which i recently learned how to do :D)
-<img width="1919" height="1079" alt="Screenshot 2026-08-11 140017" src="https://github.com/user-attachments/assets/a7f52640-b974-4400-87b1-a917c697d5e9" />
+All of the research was done by me, by hand, to practice reading and deciphering bytes (which i recently learned how to do :D)
 
 I hope my research will be useful to someone, someday.
 
